@@ -7,9 +7,15 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { environment } from '../environments/environment';
 import { SigninComponent } from './signin/signin.component';
 import { LandingComponent } from './landing/landing.component';
+import { GoogleSsoDirective } from './google-sso.directive';
 
 @NgModule({
-  declarations: [AppComponent, SigninComponent, LandingComponent],
+  declarations: [
+    AppComponent,
+    SigninComponent,
+    LandingComponent,
+    GoogleSsoDirective,
+  ],
   imports: [
     AngularFireAuthModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
