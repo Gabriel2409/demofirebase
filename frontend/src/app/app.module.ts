@@ -9,6 +9,8 @@ import { SigninComponent } from './signin/signin.component';
 import { LandingComponent } from './landing/landing.component';
 import { GoogleSsoDirective } from './google-sso.directive';
 import { RequireAuthComponent } from './require-auth/require-auth.component';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { bearerTokenInterceptor } from './bearer-token.interceptor';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,7 @@ import { RequireAuthComponent } from './require-auth/require-auth.component';
     BrowserModule,
     AppRoutingModule,
   ],
-  providers: [],
+  providers: [provideHttpClient(withInterceptors([bearerTokenInterceptor]))],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
