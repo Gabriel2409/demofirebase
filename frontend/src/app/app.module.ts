@@ -8,6 +8,7 @@ import { environment } from '../environments/environment';
 import { SigninComponent } from './signin/signin.component';
 import { LandingComponent } from './landing/landing.component';
 import { GoogleSsoDirective } from './google-sso.directive';
+import { RequireAuthComponent } from './require-auth/require-auth.component';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { GoogleSsoDirective } from './google-sso.directive';
     SigninComponent,
     LandingComponent,
     GoogleSsoDirective,
+    RequireAuthComponent,
   ],
   imports: [
     AngularFireAuthModule,
