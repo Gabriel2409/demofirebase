@@ -3,7 +3,7 @@ PROJECT_DIR=.
 # frontend dir, where to install node_modules
 FRONTEND_DIR=./frontend
 
-.PHONY: help venv node_modules install
+.PHONY: help venv node_modules install check-prerequisites
 
 # Display help message
 help:
@@ -49,6 +49,7 @@ ${FRONTEND_DIR}/node_modules/touchfile: ${FRONTEND_DIR}/package.json ${FRONTEND_
 	touch ${FRONTEND_DIR}/node_modules/touchfile
 
 install: check-prerequisites venv node_modules
+	@echo "Installation complete. Don't forget to activate environment"
 
 clean:
 	@echo "Cleaning up..."
