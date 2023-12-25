@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Angular: run frontend",
+      "type": "firefox",
+      "request": "launch",
+      "preLaunchTask": "Run Angular Frontend",
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}/frontend"
+    },
+    {
+      "name": "Python: FastAPI",
+      "type": "python",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--port", "8000"],
+      "envFile": "${workspaceFolder}/backend/.env",
+      "env": {
+        "DEBUG": "1"
+      },
+      "jinja": true,
+      "justMyCode": true
+    },
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}
