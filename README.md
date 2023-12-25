@@ -69,7 +69,8 @@ firebase_admin.initialize_app()
 ```
 
 Note: you can temporarily add this line to check that your firebase app is correctly loaded:
-`print("Current App Name:", firebase_admin.get_app().project_id)`
+`print("Current App Name:", firebase_admin.get_app().project_id)`.
+If you remove the `load_dotenv`, you should see that the project_id is None.
 
 ## Adding CORS
 
@@ -91,4 +92,46 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+```
+
+## Refactoring
+
+`main.py` is getting a bit complex. Let's refactor by moving logic to `config.py`
+
+```python
+## config.py
+import os
+import pathlib
+from functools import lru_cache
+from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
+
+
+# we need to load the env file because it contains the GOOGLE_APPLICATION_CREDENTIALS
+basedir = pathlib.Path(__file__).parents[1]
+load_dotenv(basedir / ".env")
+
+class Settings(BaseSettings):
+    """Main settings"""
+    app_name: str = "demofirebase"
+    env: str = os.getenv("ENV", "development")
+
+    # Needed for CORS
+    frontend_url: str = os.getenv("FRONTEND_URL", "NA")
+
+
+@lru_cache
+def get_settings() -> Settings:
+    """Retrieves the fastapi settings"""
+    return Settings()
+```
+
+and now in `main.py`, we can remove all the environment variable logic:
+
+```python
+...
+# importing config will also call load_dotenv to get GOOGLE_APPLICATION_CREDENTIALS
+from app.config import get_settings
+...
+origins = [settings.frontend_url]
 ```

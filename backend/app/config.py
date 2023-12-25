@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from firebase_admin.auth import verify_id_token
-from firebase_admin.firestore import firestore
 from pydantic_settings import BaseSettings
 
 
@@ -35,12 +34,6 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """Retrieves the fastapi settings"""
     return Settings()
-
-
-@lru_cache
-def get_firestore_client() -> firestore.Client:
-    """Gets the firestore client"""
-    return firestore.Client()
 
 
 def get_firebase_user_from_token(
