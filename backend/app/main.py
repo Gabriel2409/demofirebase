@@ -1,20 +1,32 @@
-import firebase_admin
 from app.router import router
 from fastapi import FastAPI
 
+import firebase_admin
+from dotenv import load_dotenv
+import pathlib
+
+from fastapi.middleware.cors import CORSMiddleware
+import os
+
+# we need to load the env file because it contains the GOOGLE_APPLICATION_CREDENTIALS
+basedir = pathlib.Path(__file__).parents[1]
+load_dotenv(basedir / ".env")
 
 app = FastAPI()
 app.include_router(router)
+origins = [os.getenv("FRONTEND_URL", "")]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-def initialize_firebase():
-    """Initializes firebase with correct credentials.
+firebase_admin.initialize_app()
 
-    No need to pass the credentials as we use the env variable
-    GOOGLE_APPLICATION_CREDENTIALS. Note that this variable is
-    set automatically on firebase Cloud run so no need to add service-account.json
-    to the container. However, it means local docker containers will not work.
-    """
-    # cred = credentials.Certificate(creds_file_path)
-    # firebase_admin.initialize_app(cred)
-    firebase_admin.initialize_app()
+# Debug, check app is correctly
+print("Current App Name:", firebase_admin.get_app().project_id)
+print(os.getenv("FRONTEND_URL"))
