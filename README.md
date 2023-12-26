@@ -135,3 +135,81 @@ from app.config import get_settings
 ...
 origins = [settings.frontend_url]
 ```
+
+## Adding firebase authentication
+
+In the config, we will add the possibility to handle requests from firebase authenticated
+users. When a user is authenticated, he will send a bearer token in the authorization header.
+In the backend, we must retrieve this user and check that it corresponds to a firebase authenticated user.
+
+To do so we update config.py:
+
+```python
+
+# config.py
+...
+from typing import Annotated
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from firebase_admin.auth import verify_id_token
+...
+
+# use of a simple bearer scheme as auth is handled by firebase and not fastapi
+# we set auto_error to False because fastapi incorrectly returns a 403 intead of a 401
+# see: https://github.com/tiangolo/fastapi/pull/2120
+bearer_scheme = HTTPBearer(auto_error=False)
+
+...
+
+def get_firebase_user_from_token(
+    token: Annotated[HTTPAuthorizationCredentials | None], Depends(bearer_scheme)],
+) -> dict | None:
+    """Uses bearer token to identify firebase user id
+
+    Args:
+        token : the bearer token. Can be None as we set auto_error to False
+
+    Returns:
+        dict: the firebase user on success
+    Raises:
+        HTTPException 401 if user does not exist or token is invalid
+    """
+    try:
+        if not token:
+            # raise and catch to return 401, only needed because fastapi returns 403
+            # by default instead of 401 so we set auto_error to False
+            raise ValueError("No token")
+        user = verify_id_token(token.credentials)
+        return user
+
+    # lots of possible exceptions, see firebase_admin.auth,
+    # but most of the time it is a credentials issue
+    except Exception:
+        # we also set the header
+        # see https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not logged in or Invalid credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+```
+
+Now we can create a new route in `router.py`:
+
+```python
+
+# router.py
+from fastapi import APIRouter, Depends
+from typing import Annotated
+from app.config import get_firebase_user_from_token
+
+...
+
+@router.get("/userid")
+async def get_userid(user: Annotated[dict, Depends(get_firebase_user_from_token)]):
+    """gets the firebase connected user"""
+    return {"id": user["uid"]}
+```
+
+Fastapi will automatically call our `get_firebase_user_from_token` function and save the
+result in user. More info here: `https://fastapi.tiangolo.com/tutorial/dependencies/`
