@@ -2,6 +2,10 @@
 
 Basic project to test firebase authentication with angular frontend and fastapi backend.
 
+Medium article:
+
+- https://medium.com/@gabriel.cournelle/firebase-authentication-in-angular-ab1b66d041dc
+
 ## Install the prerequisites
 
 - python 3.10 or above, for ex with pyenv: https://github.com/pyenv/pyenv
